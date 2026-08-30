@@ -119,8 +119,8 @@ class RRMEnvConfig:
     arrival_rate_mean: float = 5.0
     """Mean packet arrival rate per step (Poisson λ)."""
 
-    packet_size_bits: int = 1500 * 8
-    """Bits per packet (default: 1500-byte Ethernet frame)."""
+    packet_size_bits: int = 100 * 8
+    """Bits per packet (default: 100-byte IoT / telemetry packet payload)."""
 
     # ── Channel (simple path-loss model, always active) ──────────────────
     path_loss_exponent: float = 3.5
@@ -346,7 +346,7 @@ class BaseRRMEnv(gym.Env):
             packets_delivered.sum() / max(arrivals.sum() + prev_queue.sum(), 1)
         )
         normalised_throughput = np.clip(
-            throughput_bits.sum() / (num_ues * self.cfg.rb_bandwidth_hz * 20.0), 0, 1
+            throughput_bits.sum() / (num_ues * self.cfg.rb_bandwidth_hz * 1e-3 * 20.0), 0, 1
         )
         normalised_delay = np.clip(
             self._queue_lengths.mean() / self.cfg.max_queue_packets, 0, 1
