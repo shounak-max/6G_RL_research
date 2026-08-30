@@ -75,6 +75,7 @@ class GraphTopology:
         self._num_ues: int = int(state["num_ues"])
         self._num_rbs: int = int(state["num_rbs"])
         self._cell_radius: float = float(state["cell_radius_m"])
+        self._max_queue_packets: float = float(state.get("max_queue_packets", 100))
         self._threshold = interference_threshold
 
         self._node_features, self._edge_index, self._edge_features = (
@@ -98,16 +99,19 @@ class GraphTopology:
         # ── Node features ────────────────────────────────────────────────
         dist_norm = np.clip(self._distances_m / self._cell_radius, 0, 1)  # (U,)
         queue_norm = np.clip(
-            self._queue_lengths / max(self._queue_lengths.max(), 1), 0, 1
+            self._queue_lengths / self._max_queue_packets, 0.0, 1.0
         )  # (U,)
         pos_norm = (
             self._ue_positions / self._cell_radius * 0.5 + 0.5
         )  # (U, 2), in [0, 1]
 
+        # Channel gains bounded in [0, 1]
+        channel_gains_norm = np.clip(self._channel_gains / 1.0, 0.0, 1.0)
+
         node_features = np.concatenate(
             [
                 dist_norm[:, None],           # (U, 1)
-                self._channel_gains,          # (U, R)
+                channel_gains_norm,           # (U, R)
                 queue_norm[:, None],          # (U, 1)
                 pos_norm,                     # (U, 2)
             ],

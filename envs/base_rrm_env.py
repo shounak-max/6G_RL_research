@@ -326,14 +326,16 @@ class BaseRRMEnv(gym.Env):
         throughput_bits = self._compute_throughput(sinr)
 
         # Update queues
-        # 1. Packet arrivals (Poisson)
+        # 1. Capture previous queue state BEFORE adding new arrivals
+        prev_queue = self._queue_lengths.copy()
+
+        # 2. Packet arrivals (Poisson)
         arrivals = self._rng.poisson(self.cfg.arrival_rate_mean, num_ues)
         self._queue_lengths = np.minimum(
             self._queue_lengths + arrivals, self.cfg.max_queue_packets
         )
-        # 2. Departures based on throughput
+        # 3. Departures based on throughput
         departures = np.floor(throughput_bits / self.cfg.packet_size_bits).astype(int)
-        prev_queue = self._queue_lengths.copy()
         self._queue_lengths = np.maximum(self._queue_lengths - departures, 0)
 
         # Metrics
@@ -385,7 +387,7 @@ class BaseRRMEnv(gym.Env):
         """
         Compute (num_ues × num_rbs) channel gain matrix.
         Uses log-distance path-loss + log-normal shadowing.
-        Returns linear gain values (not dB), in [0, 1] after normalisation.
+        Returns linear absolute physical path gain values (not normalized to 1.0).
         """
         num_ues = self.cfg.num_ues
         num_rbs = self.cfg.num_rbs
@@ -404,10 +406,6 @@ class BaseRRMEnv(gym.Env):
         total_loss_db = pl_db[:, None] + shadowing_db  # (num_ues, num_rbs)
         gain_linear = _db_to_linear(-total_loss_db)    # (num_ues, num_rbs)
 
-        # Normalise to [0, 1] across the matrix
-        g_max = gain_linear.max()
-        if g_max > 0:
-            gain_linear = gain_linear / g_max
         return gain_linear.astype(np.float32)
 
     def _update_realistic_channel(self) -> None:
@@ -489,12 +487,16 @@ class BaseRRMEnv(gym.Env):
             ],
             dtype=np.float32,
         )
-        # Normalise SINR by a reference value (40 dB = 10000 linear)
-        sinr_norm = np.clip(sinr_est / 1e4, 0.0, 1.0).astype(np.float32)
+        # Normalise SINR in dB scale over a realistic dynamic range (-10 dB to 40 dB)
+        sinr_db = 10.0 * np.log10(sinr_est + 1e-20)
+        sinr_norm = np.clip((sinr_db + 10.0) / 50.0, 0.0, 1.0).astype(np.float32)
+
+        # Channel gains: clip/scale in log/dB domain or direct linear bounded
+        channel_gains_norm = np.clip(self._channel_gains / 1.0, 0.0, 1.0).astype(np.float32)
 
         obs = np.concatenate(
             [
-                self._channel_gains.flatten(),   # (num_ues * num_rbs,)
+                channel_gains_norm.flatten(),   # (num_ues * num_rbs,)
                 sinr_norm.flatten(),             # (num_ues * num_rbs,)
                 queue_norm,                       # (num_ues,)
                 pos_norm.flatten(),              # (num_ues * 2,)
@@ -511,7 +513,7 @@ class BaseRRMEnv(gym.Env):
 
     # ── Helpers for Phase 2 graph export ─────────────────────────────────────
 
-    def get_state_dict(self) -> Dict[str, np.ndarray]:
+    def get_state_dict(self) -> Dict[str, Any]:
         """
         Return a snapshot of the current environment state for use by
         graph_topology.py and GAT-CRL agents (Phase 2).
@@ -524,6 +526,7 @@ class BaseRRMEnv(gym.Env):
             "num_ues": self.cfg.num_ues,
             "num_rbs": self.cfg.num_rbs,
             "cell_radius_m": self.cfg.cell_radius_m,
+            "max_queue_packets": self.cfg.max_queue_packets,
         }
 
     def update_sla_weights(self, weights: SLAWeights) -> None:

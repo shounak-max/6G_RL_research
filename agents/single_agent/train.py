@@ -130,11 +130,11 @@ def main():
                 seed=args.seed,
             )
         elif args.algo == "dqn":
-            # Flatten multidiscrete space for DQN if necessary
-            flattened_env = gym.wrappers.FlattenObservation(env)
-            # DQN natively requires discrete action space; for multidiscrete, use ActionTable or PPO
-            print("[*] Note: For MultiDiscrete action spaces, PPO is recommended. Initializing PPO.")
-            model = PPO("MlpPolicy", env, verbose=1, seed=args.seed)
+            raise ValueError(
+                "DQN does not natively support MultiDiscrete action spaces on BaseRRMEnv. "
+                "Please choose --algo ppo, or use an action-space mapping wrapper to convert "
+                "MultiDiscrete actions into a single flat Discrete space."
+            )
 
         # 3. Train
         print("\n[*] Starting Training Loop...")

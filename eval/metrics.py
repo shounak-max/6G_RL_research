@@ -144,9 +144,10 @@ class MetricsTracker:
         mean_delay = float(np.mean([s.delay_ms for s in self._current_steps]))
         mean_pdr = float(np.mean([s.pdr for s in self._current_steps]))
         total_energy = sum(s.energy_joules for s in self._current_steps)
-        total_tp = sum(s.throughput_mbps for s in self._current_steps)
 
-        energy_eff = (total_tp / total_energy) if total_energy > 1e-6 else 0.0
+        # Convert step rate (Mbps) to step volume (Megabits) using 1 ms (1e-3 s) duration
+        total_data_megabits = sum(s.throughput_mbps * 1e-3 for s in self._current_steps)
+        energy_eff = (total_data_megabits / total_energy) if total_energy > 1e-6 else 0.0
         sla_violations = sum(1 for s in self._current_steps if s.sla_violated)
         sla_violation_rate = sla_violations / num_steps
         total_comm = sum(s.comm_bytes for s in self._current_steps)
