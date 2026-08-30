@@ -331,15 +331,17 @@ class BaseRRMEnv(gym.Env):
 
         # 2. Packet arrivals (Poisson)
         arrivals = self._rng.poisson(self.cfg.arrival_rate_mean, num_ues)
-        self._queue_lengths = np.minimum(
-            self._queue_lengths + arrivals, self.cfg.max_queue_packets
-        )
+
+        # Track the total buffer size available to deliver in this step
+        queue_before_departure = np.minimum(prev_queue + arrivals, self.cfg.max_queue_packets)
+        self._queue_lengths = queue_before_departure.copy()
+
         # 3. Departures based on throughput
         departures = np.floor(throughput_bits / self.cfg.packet_size_bits).astype(int)
         self._queue_lengths = np.maximum(self._queue_lengths - departures, 0)
 
         # Metrics
-        packets_delivered = np.minimum(departures, prev_queue.astype(int))
+        packets_delivered = np.minimum(departures, queue_before_departure.astype(int))
         pdr = (
             packets_delivered.sum() / max(arrivals.sum() + prev_queue.sum(), 1)
         )
@@ -491,8 +493,9 @@ class BaseRRMEnv(gym.Env):
         sinr_db = 10.0 * np.log10(sinr_est + 1e-20)
         sinr_norm = np.clip((sinr_db + 10.0) / 50.0, 0.0, 1.0).astype(np.float32)
 
-        # Channel gains: clip/scale in log/dB domain or direct linear bounded
-        channel_gains_norm = np.clip(self._channel_gains / 1.0, 0.0, 1.0).astype(np.float32)
+        # Channel gains: convert absolute linear gains to dB scale and normalize between -140 dB and -40 dB
+        channel_gains_db = 10.0 * np.log10(self._channel_gains + 1e-20)
+        channel_gains_norm = np.clip((channel_gains_db + 140.0) / 100.0, 0.0, 1.0).astype(np.float32)
 
         obs = np.concatenate(
             [

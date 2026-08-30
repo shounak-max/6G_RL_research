@@ -105,8 +105,9 @@ class GraphTopology:
             self._ue_positions / self._cell_radius * 0.5 + 0.5
         )  # (U, 2), in [0, 1]
 
-        # Channel gains bounded in [0, 1]
-        channel_gains_norm = np.clip(self._channel_gains / 1.0, 0.0, 1.0)
+        # Channel gains in dB scale normalized between -140 dB and -40 dB
+        channel_gains_db = 10.0 * np.log10(self._channel_gains + 1e-20)
+        channel_gains_norm = np.clip((channel_gains_db + 140.0) / 100.0, 0.0, 1.0).astype(np.float32)
 
         node_features = np.concatenate(
             [
@@ -133,11 +134,9 @@ class GraphTopology:
 
         for i in range(U):
             for j in range(i + 1, U):
-                # Max cross-channel gain as interference proxy
-                # (worst case: if both UEs are on the same RB, the interference
-                #  is proportional to the product of their channel gains)
+                # Max cross-channel gain as interference proxy on normalized [0, 1] scale
                 cross_gain = float(
-                    (self._channel_gains[i] * self._channel_gains[j]).max()
+                    (channel_gains_norm[i] * channel_gains_norm[j]).max()
                 )
                 if cross_gain < self._threshold:
                     continue
