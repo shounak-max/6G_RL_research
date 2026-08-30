@@ -1,0 +1,44 @@
+{
+  "independent_clean": {
+    "scheme": "Independent Learners",
+    "channel": "Clean",
+    "late_reward": -0.5238150467208359,
+    "late_variance": 0.00419098392798067,
+    "comm_bytes_per_step": 0.0
+  },
+  "full_broadcast_clean": {
+    "scheme": "Full Broadcast",
+    "channel": "Clean",
+    "late_reward": -0.5328642786388502,
+    "late_variance": 0.003881897769453697,
+    "comm_bytes_per_step": 10752.0
+  },
+  "gat_crl_clean": {
+    "scheme": "GAT-CRL (Selective)",
+    "channel": "Clean",
+    "late_reward": -0.533174311205099,
+    "late_variance": 0.0046553692248678434,
+    "comm_bytes_per_step": 3072.0
+  },
+  "independent_blockage": {
+    "scheme": "Independent Learners",
+    "channel": "Realistic Blockage",
+    "late_reward": -0.5223784138425808,
+    "late_variance": 0.004430964607076027,
+    "comm_bytes_per_step": 0.0
+  },
+  "full_broadcast_blockage": {
+    "scheme": "Full Broadcast",
+    "channel": "Realistic Blockage",
+    "late_reward": -0.5232081523690514,
+    "late_variance": 0.004633647481324076,
+    "comm_bytes_per_step": 10746.624
+  },
+  "gat_crl_blockage": {
+    "scheme": "GAT-CRL (Selective)",
+    "channel": "Realistic Blockage",
+    "late_reward": -0.5243195340578681,
+    "late_variance": 0.004977885151758947,
+    "comm_bytes_per_step": 3072.0
+  }
+}

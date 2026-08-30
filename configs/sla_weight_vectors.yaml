@@ -1,0 +1,68 @@
+# SLA Reward-Weight Vectors
+# Each vector maps physical SLA priorities a real operator would set.
+# Format:
+#   name: human-readable label
+#   throughput:   weight on total throughput reward
+#   delay:        weight on delay penalty (applied negatively)
+#   energy:       weight on power-cost penalty (applied negatively)
+#   pdr:          weight on packet delivery ratio bonus
+#
+# These are used by:
+#   - pretraining/sweep_runner.py  (Phase 1) — generates the expert policy DB
+#   - envs/base_rrm_env.py         — runtime reward shaping
+#   - agents/single_agent/train.py — selected via --sla-profile flag
+
+defaults:
+  throughput: 1.0
+  delay: 0.5
+  energy: 0.2
+  pdr: 0.3
+
+profiles:
+  - name: throughput_first
+    description: "Maximize throughput; tolerate some delay and energy"
+    throughput: 1.0
+    delay: 0.2
+    energy: 0.1
+    pdr: 0.2
+
+  - name: latency_critical
+    description: "Ultra-low latency (e.g., URLLC slice)"
+    throughput: 0.4
+    delay: 1.0
+    energy: 0.1
+    pdr: 0.5
+
+  - name: energy_efficient
+    description: "Green network; sacrifice some throughput for power savings"
+    throughput: 0.5
+    delay: 0.3
+    energy: 1.0
+    pdr: 0.2
+
+  - name: reliability_first
+    description: "High PDR; mission-critical IoT or safety applications"
+    throughput: 0.3
+    delay: 0.4
+    energy: 0.1
+    pdr: 1.0
+
+  - name: balanced
+    description: "Equal weight on all objectives"
+    throughput: 0.5
+    delay: 0.5
+    energy: 0.5
+    pdr: 0.5
+
+  - name: throughput_energy
+    description: "Throughput vs energy trade-off"
+    throughput: 0.8
+    delay: 0.2
+    energy: 0.8
+    pdr: 0.2
+
+# Phase 1 sweep parameters
+sweep:
+  num_weight_vectors: 106   # matches roadmap benchmark
+  num_runs_per_vector: 32   # scale to available compute (roadmap target: 3392 total)
+  seed_start: 42

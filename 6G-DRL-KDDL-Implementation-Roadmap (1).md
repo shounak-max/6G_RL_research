@@ -8,6 +8,11 @@ into a buildable simulation project with concrete modules, tasks, and acceptance
 another coding agent as a project spec. Each phase is scoped to be independently buildable
 and testable in simulation — no live RAN hardware required for Phases 0–2.
 
+**Revision note (v2):** Three items below are marked `[Reviewer note]` — enhancements added
+after a critical review of external feedback on v1. Each was adapted (not copied verbatim)
+to fit the roadmap's existing phase boundaries and avoid overloading early, deliberately
+simple phases. See the notes inline for what changed and why.
+
 ---
 
 ## 0. Project Framing
@@ -95,9 +100,14 @@ multi-agent or knowledge-driven complexity.
 - [ ] Build `graph_topology.py` so any environment can export a graph representation
       (nodes = transceivers, edges = interference/adjacency) — this is reused in Phase 2.
 - [ ] Set up experiment tracking (mlflow/wandb) and a fixed evaluation harness in `eval/`.
+- [ ] `[Reviewer note]` Add a **toggleable "realistic channel" mode** to `base_rrm_env.py`:
+      doubly-selective fading plus stochastic mmWave/THz blockage events (sudden link
+      dropouts), behind a config flag defaulting to **off**. Don't let this delay or
+      complicate the Phase 0 acceptance test below — it exists so Phase 2 can stress-test
+      GAT-CRL against it later, not so Phase 0 has to solve channel modeling first.
 
 **Acceptance criteria:** Baseline agent trains to a stable reward on a small topology
-(e.g., 5–10 UEs) in under an hour on a single GPU/CPU.
+(e.g., 5–10 UEs) in under an hour on a single GPU/CPU, with the realistic-channel flag off.
 
 ---
 
@@ -123,6 +133,15 @@ a classifier that selects the right policy instantly when SLA priorities shift.
       error to expect.
 - [ ] Wire up a "shift SLA priority live" test: agent should load the predicted expert
       policy instead of exploring from scratch.
+- [ ] `[Reviewer note]` **(Stretch, optional)** The selector above (like Nagib et al.'s
+      original) picks an expert by weight-vector distance alone, which can cause negative
+      transfer when two tasks have similar weights but different state-visitation
+      distributions. Add a second selection signal: a tractable proxy for distributional
+      shift between expert and learner trajectories — e.g. histogram/KDE-based KL
+      divergence on a small set of state features, or MMD/Wasserstein distance if KL proves
+      too noisy in higher dimensions. Compare selection accuracy with vs. without this
+      signal. This is a genuine extension beyond the source paper's method, not part of its
+      benchmark — don't hold it to the 96.5% figure below.
 
 **Acceptance criteria (from source benchmarks — treat as targets to approach, not
 guarantees at smaller scale):**
@@ -161,6 +180,10 @@ bandwidth-efficient cooperative scheme.
   under selective sharing — compare directly against the independent-learner baseline.
 - Communication overhead per agent should scale sub-linearly with neighborhood size,
   not linearly with total agent count.
+- `[Reviewer note]` **Robustness ablation:** re-run the GAT-CRL vs. independent-learner vs.
+  full-broadcast comparison with Phase 0's realistic-channel flag turned **on** (blockage
+  events cutting neighbor links mid-episode). Selective sharing should degrade gracefully
+  — not catastrophically — compared to the baselines when neighbors abruptly disappear.
 
 ---
 
@@ -174,6 +197,13 @@ provable safety layer, and close the loop with a (simulated) digital twin.
 - [ ] **Knowledge-Assisted:** Document, per environment, why a given architecture was
       chosen (GNN for graph topology, LSTM for temporal traffic) and add
       constraint-specific loss terms (primal-dual penalty terms) where relevant.
+- [ ] `[Reviewer note]` **Generalize the multi-objective reward beyond the UAV env.**
+      Phase 1's `uav_routing_env.py` already uses a Q-Proposed-style composite reward
+      (delay + energy + link stability + progress) — this task is *not* introducing that
+      pattern for the first time. Instead, port the same multi-objective reward-shaping
+      approach into `base_rrm_env.py` (PDR, delay, link quality, energy), replacing Phase
+      0's flat throughput-minus-delay reward, and document how each weight maps to a
+      physical SLA priority a real operator would set.
 - [ ] **Knowledge-Fused (ComNet-style):** Build a two-stage pipeline in one environment
       (e.g., channel estimation or receiver design): a model-based module produces a
       coarse initialization, then a small data-driven module refines it. Compare sample
