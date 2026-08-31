@@ -43,10 +43,15 @@ class ExpertEntry:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        return asdict(self)
+        d = asdict(self)
+        d["checkpoint_path"] = str(Path(self.checkpoint_path).as_posix())
+        return d
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> ExpertEntry:
+        # Cross-platform path normalization
+        if "checkpoint_path" in data:
+            data["checkpoint_path"] = str(Path(data["checkpoint_path"].replace("\\", "/")))
         return cls(**data)
 
 
