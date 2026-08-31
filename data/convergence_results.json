@@ -1,0 +1,60 @@
+{
+  "sla_profile": "balanced",
+  "max_timesteps": 100000,
+  "results": [
+    {
+      "timesteps": 5000,
+      "pdr": 0.0,
+      "mean_reward": -0.3682,
+      "sla_violation_rate_pct": 92.3,
+      "mean_throughput_mbps": 0.0,
+      "mean_delay_ms": 0.0,
+      "elapsed_s": 50.59
+    },
+    {
+      "timesteps": 9000,
+      "pdr": 0.0,
+      "mean_reward": -0.3704,
+      "sla_violation_rate_pct": 92.7,
+      "mean_throughput_mbps": 0.0,
+      "mean_delay_ms": 0.0,
+      "elapsed_s": 32.24
+    },
+    {
+      "timesteps": 17000,
+      "pdr": 0.0,
+      "mean_reward": -0.2771,
+      "sla_violation_rate_pct": 75.3,
+      "mean_throughput_mbps": 0.0,
+      "mean_delay_ms": 0.0,
+      "elapsed_s": 65.35
+    },
+    {
+      "timesteps": 30000,
+      "pdr": 0.0,
+      "mean_reward": -0.3238,
+      "sla_violation_rate_pct": 93.4,
+      "mean_throughput_mbps": 0.0,
+      "mean_delay_ms": 0.0,
+      "elapsed_s": 120.62
+    },
+    {
+      "timesteps": 55000,
+      "pdr": 0.0,
+      "mean_reward": -0.2987,
+      "sla_violation_rate_pct": 93.1,
+      "mean_throughput_mbps": 0.0,
+      "mean_delay_ms": 0.0,
+      "elapsed_s": 226.52
+    },
+    {
+      "timesteps": 100000,
+      "pdr": 0.0,
+      "mean_reward": -0.3062,
+      "sla_violation_rate_pct": 74.8,
+      "mean_throughput_mbps": 0.0,
+      "mean_delay_ms": 0.0,
+      "elapsed_s": 361.0
+    }
+  ]
+}

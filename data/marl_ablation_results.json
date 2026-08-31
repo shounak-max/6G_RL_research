@@ -2,43 +2,145 @@
   "independent_clean": {
     "scheme": "Independent Learners",
     "channel": "Clean",
-    "late_reward": -0.09112914066999835,
-    "late_variance": 0.020387031133323637,
-    "comm_bytes_per_step": 0.0
+    "late_reward": -0.10739200211297521,
+    "late_variance": 0.017478644363560853,
+    "comm_bytes_per_step": 0.0,
+    "stats": {
+      "reward": {
+        "mean": -0.10739200211297521,
+        "std": 0.03724823838547049,
+        "ci95": 0.04215
+      },
+      "variance": {
+        "mean": 0.017478644363560853,
+        "std": 0.0018041819159056258,
+        "ci95": 0.00204
+      },
+      "comm_bytes": {
+        "mean": 0.0,
+        "std": 0.0,
+        "ci95": 0.0
+      }
+    }
   },
   "full_broadcast_clean": {
     "scheme": "Full Broadcast",
     "channel": "Clean",
-    "late_reward": -0.1486880462646728,
-    "late_variance": 0.016139174007676067,
-    "comm_bytes_per_step": 10752.0
+    "late_reward": -0.17262384313467793,
+    "late_variance": 0.019142388705421984,
+    "comm_bytes_per_step": 10752.0,
+    "stats": {
+      "reward": {
+        "mean": -0.17262384313467793,
+        "std": 0.0515803663637776,
+        "ci95": 0.05837
+      },
+      "variance": {
+        "mean": 0.019142388705421984,
+        "std": 0.003908824770173453,
+        "ci95": 0.00442
+      },
+      "comm_bytes": {
+        "mean": 10752.0,
+        "std": 0.0,
+        "ci95": 0.0
+      }
+    }
   },
   "gat_crl_clean": {
     "scheme": "GAT-CRL (Selective)",
     "channel": "Clean",
-    "late_reward": -0.14602781348709384,
-    "late_variance": 0.019381934357383074,
-    "comm_bytes_per_step": 3072.0
+    "late_reward": -0.15993610829068486,
+    "late_variance": 0.020544327436294196,
+    "comm_bytes_per_step": 3072.0,
+    "stats": {
+      "reward": {
+        "mean": -0.15993610829068486,
+        "std": 0.026194606689853316,
+        "ci95": 0.02964
+      },
+      "variance": {
+        "mean": 0.020544327436294196,
+        "std": 0.0026589314380440683,
+        "ci95": 0.00301
+      },
+      "comm_bytes": {
+        "mean": 3072.0,
+        "std": 0.0,
+        "ci95": 0.0
+      }
+    }
   },
   "independent_blockage": {
     "scheme": "Independent Learners",
     "channel": "Realistic Blockage",
-    "late_reward": -0.15206798234388771,
-    "late_variance": 0.01857768558138675,
-    "comm_bytes_per_step": 0.0
+    "late_reward": -0.11359638735538087,
+    "late_variance": 0.01981744748943554,
+    "comm_bytes_per_step": 0.0,
+    "stats": {
+      "reward": {
+        "mean": -0.11359638735538087,
+        "std": 0.004340984962856958,
+        "ci95": 0.00491
+      },
+      "variance": {
+        "mean": 0.01981744748943554,
+        "std": 0.00204648102890991,
+        "ci95": 0.00232
+      },
+      "comm_bytes": {
+        "mean": 0.0,
+        "std": 0.0,
+        "ci95": 0.0
+      }
+    }
   },
   "full_broadcast_blockage": {
     "scheme": "Full Broadcast",
     "channel": "Realistic Blockage",
-    "late_reward": -0.29455740886724213,
-    "late_variance": 0.009762643370267141,
-    "comm_bytes_per_step": 10752.0
+    "late_reward": -0.30401297416266665,
+    "late_variance": 0.011202058347776803,
+    "comm_bytes_per_step": 10742.442666666668,
+    "stats": {
+      "reward": {
+        "mean": -0.30401297416266665,
+        "std": 0.0095505484099351,
+        "ci95": 0.01081
+      },
+      "variance": {
+        "mean": 0.011202058347776803,
+        "std": 0.0012462971287634213,
+        "ci95": 0.00141
+      },
+      "comm_bytes": {
+        "mean": 10742.442666666668,
+        "std": 1.5229071613927063,
+        "ci95": 1.72333
+      }
+    }
   },
   "gat_crl_blockage": {
     "scheme": "GAT-CRL (Selective)",
     "channel": "Realistic Blockage",
-    "late_reward": -0.27765194547084177,
-    "late_variance": 0.012267101929552054,
-    "comm_bytes_per_step": 3071.616
+    "late_reward": -0.30325749171604544,
+    "late_variance": 0.012201858857525743,
+    "comm_bytes_per_step": 3070.72,
+    "stats": {
+      "reward": {
+        "mean": -0.30325749171604544,
+        "std": 0.004174852441344349,
+        "ci95": 0.00472
+      },
+      "variance": {
+        "mean": 0.012201858857525743,
+        "std": 0.0013158893157133138,
+        "ci95": 0.00149
+      },
+      "comm_bytes": {
+        "mean": 3070.72,
+        "std": 0.3135346870762587,
+        "ci95": 0.3548
+      }
+    }
   }
 }
